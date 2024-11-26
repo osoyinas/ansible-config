@@ -4,7 +4,7 @@
   tasks:
     - name: Copiar el archivo snmpd.conf en /etc/snmp
       copy:
-        src: ~/ansible/snmpd.conf
+        src: snmpd.conf
         dest: /etc/snmp/snmpd.conf
         owner: root
         group: root
