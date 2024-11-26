@@ -16,4 +16,6 @@
       ignore_errors: yes
  
   roles:
+    - node
+    - mysql
     - grafana
