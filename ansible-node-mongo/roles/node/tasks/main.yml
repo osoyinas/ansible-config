@@ -1,0 +1,66 @@
+- name: Install Node.js
+  apt:
+    name: "curl"
+    state: present
+    update_cache: yes
+
+- name: Add Node.js PPA
+  shell: "curl -sL https://deb.nodesource.com/setup_{{ node_version }} | bash -"
+
+- name: Install Node.js
+  apt:
+    name: "nodejs"
+    state: present
+
+- name: Clone the project repository
+  git:
+    repo: "{{ repository_url }}"
+    dest: "{{ project_directory }}"
+    version: master
+    force: yes
+
+- name: Install project dependencies
+  npm:
+    path: "{{ project_directory }}"
+    state: present
+
+- name: Create a systemd service for the Node.js app
+  copy:
+    dest: /etc/systemd/system/nodeapp.service
+    content: |
+      [Unit]
+      Description=Node.js Application
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/bin/node {{ project_directory }}/app.js
+      Restart=always
+      User=nobody
+      Group=nogroup
+      Environment=PORT=3000
+      WorkingDirectory={{ project_directory }}
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Start and enable the Node.js service
+  systemd:
+    name: nodeapp
+    state: started
+    enabled: yes
+  notify: Restart Node.js application
+
+- name: Make an HTTP request to the Node.js server
+  uri:
+    url: "http://{{ ansible_host }}:3000"
+    method: GET
+    status_code: 200
+    return_content: no
+  register: result
+  until: result.status == 200
+  retries: 60
+  delay: 1
+
+- name: Print the response from the Node.js server
+  debug:
+    msg: "Node.js server is responding with status {{ result.status }}"

@@ -1,0 +1,8 @@
+grafana_version: "9.6.3"  # Puedes cambiar la versión según tus necesidades
+grafana_user: "grafana"
+grafana_group: "grafana"
+grafana_port: 3001
+required_packages:
+  - apt-transport-https
+  - software-properties-common
+  - wget

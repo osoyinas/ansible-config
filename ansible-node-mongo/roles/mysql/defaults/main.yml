@@ -1,0 +1,5 @@
+---
+mysql_dependencies:
+  - apt-transport-https
+  - gnupg
+

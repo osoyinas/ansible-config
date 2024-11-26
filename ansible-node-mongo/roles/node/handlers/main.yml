@@ -1,0 +1,5 @@
+- name: Restart Node.js application
+  systemd:
+    name: nodeapp
+    state: restarted
+

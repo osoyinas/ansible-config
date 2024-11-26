@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: yes
+  
+  pre_tasks:
+    - name: update apt cache
+      apt:
+        update_cache: yes
+  
+    - name: Ensure all packages are upgraded
+      apt:
+        upgrade: dist
+ 
+    - name: Fix broken packages
+      command: apt-get -y -f install
+      ignore_errors: yes
+ 
+  roles:
+    - grafana

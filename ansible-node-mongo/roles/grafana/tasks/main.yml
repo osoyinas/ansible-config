@@ -1,0 +1,35 @@
+---
+- name: Install required packages for Grafana
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ required_packages }}"
+  become: yes
+
+- name: Install Grafana
+  apt:
+    name: grafana
+    state: present
+    allow_unauthenticated: yes
+  become: yes
+
+- name: Copy Grafana configuration file
+  template:
+    src: templates/grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    notify: restart grafana
+
+- name: Start and enable Grafana service
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- name: Open Grafana port in firewall (optional, if using UFW)
+  ufw:
+    rule: allow
+    name: 'Grafana'
+    port: "{{ grafana_port }}"
+    proto: tcp
+

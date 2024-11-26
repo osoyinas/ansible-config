@@ -1,0 +1,50 @@
+---
+- name: Install MySQL dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop: "{{ mysql_dependencies }}"
+
+- name: Install MySQL Server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Configure MySQL
+  template:
+    src: mysql.j2
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart MySQL
+
+- name: Start MySQL service
+  service:
+    name: mysql
+    state: started
+    enabled: true
+- name: Check if MySQL service is active
+  systemd:
+    name: mysql
+    state: started
+    enabled: true
+  register: mysql_service_status
+
+- name: Validate MySQL service status
+  debug:
+    msg: "MySQL service is running and enabled."
+  when: mysql_service_status.status.ActiveState == "active"
+
+- name: Verify MySQL is accepting connections
+  shell: |
+    mysqladmin -u root ping
+  register: mysql_ping
+  failed_when: "'mysqld is alive' not in mysql_ping.stdout"
+
+- name: Debug MySQL ping result
+  debug:
+    msg: "MySQL responded successfully: {{ mysql_ping.stdout }}"
+

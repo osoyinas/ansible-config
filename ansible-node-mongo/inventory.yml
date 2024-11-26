@@ -1,0 +1,5 @@
+all:
+  hosts:
+    node_server:
+      ansible_host: 10.0.125.3
+      ansible_user: vagrant

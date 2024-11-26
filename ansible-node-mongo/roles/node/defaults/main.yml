@@ -1,0 +1,4 @@
+node_version: "20.x"
+project_directory: "/var/www/nodeapp"
+repository_url: "https://github.com/eMahtab/node-express-hello-world"
+

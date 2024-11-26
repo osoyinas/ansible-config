@@ -1,0 +1,16 @@
+- name: Configuración de SNMP v3 en host1 y host2
+  hosts: servers
+  become: true
+  tasks:
+    - name: Copiar el archivo snmpd.conf en /etc/snmp
+      copy:
+        src: ~/ansible/snmpd.conf
+        dest: /etc/snmp/snmpd.conf
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Reiniciar el servicio snmpd
+      service:
+        name: snmpd
+        state: restarted
+
